@@ -1,33 +1,61 @@
-﻿using QuickLabel.Configuration;
+﻿using NLog;
+using QuickLabel.Configuration;
 using QuickLabel.Data;
 using QuickLabel.Forms;
 using QuickLabel.Printing;
 using System;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 
 namespace QuickLabel
 {
     public partial class MainForm : Form
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
         LabelManager labelManager;
         QLabel label;
+        AantalForm aantalForm;
+        PrintDocument printer;
+        string selecterPrinter;
+        PaperSize paperSize;
 
         public MainForm()
         {
             InitializeComponent();
+            //adapt the label size to the paper
+            printer = new PrintDocument();
+
+            var selectedPrinter = Settings.PrinterSettings.Printer;
+            printer.PrinterSettings.PrinterName = selectedPrinter;
+
+            var selectedPaper = Settings.PrinterSettings.Paper;
+
+            foreach (PaperSize paperSize in printer.PrinterSettings.PaperSizes)
+            {
+                if (paperSize.PaperName == selectedPaper)
+                {
+                    this.paperSize = paperSize;
+                    break;
+                }
+            }
+            UpdateLabel(paperSize);
         }
 
+        private void UpdateLabel(PaperSize paperSize)
+        {
+            this.quickLabelControl.Height = paperSize.Height;
+            this.quickLabelControl.Width = paperSize.Width;
+        }
         private void MainForm_Load(object sender, EventArgs e)
         {
-            logo.Width = 488;
-            logo.Height = 90;
             try
             {
                 labelManager = new LabelManager();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 MessageBox.Show(ex.Message);
             }
             GenereerAanvraag_Click(null, e);
@@ -36,9 +64,9 @@ namespace QuickLabel
         private void GenereerAanvraag_Click(object sender, EventArgs e)
         {
             var quickLabelData = labelManager.GetRandom();
-            Font font=GetFont();
+            Font font = GetFont();
 
-       
+
             label = new QLabel(quickLabelData);
             label.Font = font;
             quickLabelControl.Label = label;
@@ -54,8 +82,9 @@ namespace QuickLabel
                 var fontSize = Configuration.AppSettings.GetString(Constants.FontSize);
                 font = new Font(fontFamily, int.Parse(fontSize));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 font = new Font("Arial", 10);
             }
             return font;
@@ -63,9 +92,15 @@ namespace QuickLabel
 
         private void settings_Click(object sender, EventArgs e)
         {
-            SettingsForm settingsForm = new SettingsForm();
+            SettingsForm settingsForm = new SettingsForm(this.printer);
             settingsForm.FormClosed += SettingsForm_FormClosed;
+            settingsForm.OnSettingsChanged += SettingsForm_OnSettingsChanged;
             settingsForm.Show();
+        }
+
+        private void SettingsForm_OnSettingsChanged(PaperSize paperSize)
+        {
+            UpdateLabel(paperSize);
         }
 
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -93,5 +128,23 @@ namespace QuickLabel
 
             PrinterHelper.PrintWithOrWithoutDialog(Settings.PrinterSettings, printerAndPaperSelected, labelPrinter, printDialog1);
         }
+
+        private void PrintAanvragen_Click(object sender, EventArgs e)
+        {
+            aantalForm = new AantalForm();
+            aantalForm.ShowDialog();
+            if (aantalForm.Aantal == null)
+            {
+                return;
+            }
+
+            for (int index = 0; index < aantalForm.Aantal; index++)
+            {
+
+            }
+
+        }
     }
 }
+
+

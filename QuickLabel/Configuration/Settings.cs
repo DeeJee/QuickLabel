@@ -90,11 +90,19 @@ namespace QuickLabel.Configuration
 
         public static void Save()
         {
-            using (StreamWriter file = File.CreateText(SettingsFile))
+            try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(UserSettings));
-                serializer.Serialize(file, settings);
+                using (StreamWriter file = File.CreateText(SettingsFile))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(UserSettings));
+                    serializer.Serialize(file, settings);
+                }
             }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
         }
     }
 }

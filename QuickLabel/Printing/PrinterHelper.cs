@@ -51,17 +51,17 @@ namespace QuickLabel.Printing
             return false;
         }
 
-        private static bool SelectDefaultPaper(PrintDocument engine, PageSetupDialog pageDialog1, UserPrinterSettings printerSettings)
+        private static bool SelectDefaultPaper(PrintDocument printer, PageSetupDialog pageDialog1, UserPrinterSettings printerSettings)
         {
-            for (int index = 0; index < engine.PrinterSettings.PaperSizes.Count; index++)
+            foreach (PaperSize paperSize in printer.PrinterSettings.PaperSizes)
             {
-                if (engine.PrinterSettings.PaperSizes[index].PaperName == printerSettings.Paper)
+                if (paperSize.PaperName == printerSettings.Paper)
                 {
-                    PaperSize size = engine.PrinterSettings.PaperSizes[index];
-                    pageDialog1.PageSettings.PaperSize = size;
+                    pageDialog1.PageSettings.PaperSize = paperSize;
                     return true;
                 }
             }
+
             return false;
         }
 

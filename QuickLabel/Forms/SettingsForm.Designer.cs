@@ -34,11 +34,6 @@
             this.PrinterTab = new System.Windows.Forms.TabPage();
             this.LabelPrinterSelector = new QuickLabel.Controls.PrinterSelector();
             this.InvoerTab = new System.Windows.Forms.TabPage();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.AantalContainersBestandFieldSeparator = new System.Windows.Forms.TextBox();
-            this.NaamAantalCOntainersBestand = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.ContainerBestandFieldSeparator = new System.Windows.Forms.TextBox();
             this.NaamContainerBestand = new System.Windows.Forms.TextBox();
@@ -59,7 +54,6 @@
             this.tabControl.SuspendLayout();
             this.PrinterTab.SuspendLayout();
             this.InvoerTab.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.LabelTab.SuspendLayout();
@@ -74,7 +68,7 @@
             this.tabControl.Margin = new System.Windows.Forms.Padding(6);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(728, 772);
+            this.tabControl.Size = new System.Drawing.Size(728, 591);
             this.tabControl.TabIndex = 20;
             // 
             // PrinterTab
@@ -85,7 +79,7 @@
             this.PrinterTab.Margin = new System.Windows.Forms.Padding(6);
             this.PrinterTab.Name = "PrinterTab";
             this.PrinterTab.Padding = new System.Windows.Forms.Padding(6);
-            this.PrinterTab.Size = new System.Drawing.Size(720, 735);
+            this.PrinterTab.Size = new System.Drawing.Size(720, 554);
             this.PrinterTab.TabIndex = 0;
             this.PrinterTab.Text = "Printer";
             // 
@@ -101,59 +95,13 @@
             // InvoerTab
             // 
             this.InvoerTab.BackColor = System.Drawing.SystemColors.Control;
-            this.InvoerTab.Controls.Add(this.groupBox3);
             this.InvoerTab.Controls.Add(this.groupBox2);
             this.InvoerTab.Controls.Add(this.groupBox1);
             this.InvoerTab.Location = new System.Drawing.Point(4, 33);
             this.InvoerTab.Name = "InvoerTab";
-            this.InvoerTab.Size = new System.Drawing.Size(720, 735);
+            this.InvoerTab.Size = new System.Drawing.Size(720, 554);
             this.InvoerTab.TabIndex = 1;
             this.InvoerTab.Text = "Invoer";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.AantalContainersBestandFieldSeparator);
-            this.groupBox3.Controls.Add(this.NaamAantalCOntainersBestand);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Location = new System.Drawing.Point(12, 269);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(685, 127);
-            this.groupBox3.TabIndex = 4;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Aantal containersbestand";
-            // 
-            // AantalContainersBestandFieldSeparator
-            // 
-            this.AantalContainersBestandFieldSeparator.Location = new System.Drawing.Point(197, 75);
-            this.AantalContainersBestandFieldSeparator.Name = "AantalContainersBestandFieldSeparator";
-            this.AantalContainersBestandFieldSeparator.Size = new System.Drawing.Size(36, 29);
-            this.AantalContainersBestandFieldSeparator.TabIndex = 3;
-            // 
-            // NaamAantalCOntainersBestand
-            // 
-            this.NaamAantalCOntainersBestand.Location = new System.Drawing.Point(197, 31);
-            this.NaamAantalCOntainersBestand.Name = "NaamAantalCOntainersBestand";
-            this.NaamAantalCOntainersBestand.Size = new System.Drawing.Size(468, 29);
-            this.NaamAantalCOntainersBestand.TabIndex = 2;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 35);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(64, 25);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Naam";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 78);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(157, 25);
-            this.label6.TabIndex = 1;
-            this.label6.Text = "Scheidingsteken";
             // 
             // groupBox2
             // 
@@ -254,7 +202,7 @@
             this.LabelTab.Controls.Add(this.label7);
             this.LabelTab.Location = new System.Drawing.Point(4, 33);
             this.LabelTab.Name = "LabelTab";
-            this.LabelTab.Size = new System.Drawing.Size(720, 735);
+            this.LabelTab.Size = new System.Drawing.Size(720, 554);
             this.LabelTab.TabIndex = 2;
             this.LabelTab.Text = "Label";
             // 
@@ -294,7 +242,8 @@
             // 
             // ButtonAnnuleren
             // 
-            this.ButtonAnnuleren.Location = new System.Drawing.Point(171, 827);
+            this.ButtonAnnuleren.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ButtonAnnuleren.Location = new System.Drawing.Point(175, 633);
             this.ButtonAnnuleren.Margin = new System.Windows.Forms.Padding(6);
             this.ButtonAnnuleren.Name = "ButtonAnnuleren";
             this.ButtonAnnuleren.Size = new System.Drawing.Size(138, 42);
@@ -305,7 +254,8 @@
             // 
             // ButtonOk
             // 
-            this.ButtonOk.Location = new System.Drawing.Point(22, 827);
+            this.ButtonOk.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ButtonOk.Location = new System.Drawing.Point(26, 633);
             this.ButtonOk.Margin = new System.Windows.Forms.Padding(6);
             this.ButtonOk.Name = "ButtonOk";
             this.ButtonOk.Size = new System.Drawing.Size(138, 42);
@@ -318,7 +268,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(840, 894);
+            this.ClientSize = new System.Drawing.Size(782, 690);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.ButtonOk);
             this.Controls.Add(this.ButtonAnnuleren);
@@ -329,8 +279,6 @@
             this.tabControl.ResumeLayout(false);
             this.PrinterTab.ResumeLayout(false);
             this.InvoerTab.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -349,11 +297,6 @@
         private System.Windows.Forms.Button ButtonOk;
         private QuickLabel.Controls.PrinterSelector LabelPrinterSelector;
         private System.Windows.Forms.TabPage InvoerTab;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.TextBox AantalContainersBestandFieldSeparator;
-        private System.Windows.Forms.TextBox NaamAantalCOntainersBestand;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox ContainerBestandFieldSeparator;
         private System.Windows.Forms.TextBox NaamContainerBestand;

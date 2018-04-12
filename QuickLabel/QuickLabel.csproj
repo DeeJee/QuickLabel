@@ -39,23 +39,13 @@
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
@@ -69,26 +59,38 @@
     <Compile Include="Configuration\UserPrinterSettings.cs" />
     <Compile Include="Configuration\UserSettings.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Contrrols\FieldControl.cs">
+    <Compile Include="Controls\FieldControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Contrrols\FieldControl.Designer.cs">
+    <Compile Include="Controls\FieldControl.Designer.cs">
       <DependentUpon>FieldControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Contrrols\NumericFieldControl.cs">
+    <Compile Include="Controls\LogoControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Contrrols\PrinterSelector.cs">
+    <Compile Include="Controls\LogoControl.Designer.cs">
+      <DependentUpon>LogoControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NumericFieldControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Contrrols\PrinterSelector.Designer.cs">
+    <Compile Include="Controls\PrinterSelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PrinterSelector.Designer.cs">
       <DependentUpon>PrinterSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Contrrols\QuickLabelControl.cs">
+    <Compile Include="Controls\QuickLabelControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Contrrols\QuickLabelControl.Designer.cs">
+    <Compile Include="Controls\QuickLabelControl.Designer.cs">
       <DependentUpon>QuickLabelControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\AantalForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AantalForm.Designer.cs">
+      <DependentUpon>AantalForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
@@ -110,14 +112,17 @@
     <Compile Include="Printing\QLabel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Contrrols\FieldControl.resx">
+    <EmbeddedResource Include="Controls\FieldControl.resx">
       <DependentUpon>FieldControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contrrols\NumericFieldControl.resx">
+    <EmbeddedResource Include="Controls\NumericFieldControl.resx">
       <DependentUpon>NumericFieldControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Contrrols\PrinterSelector.resx">
+    <EmbeddedResource Include="Controls\PrinterSelector.resx">
       <DependentUpon>PrinterSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AantalForm.resx">
+      <DependentUpon>AantalForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
@@ -134,17 +139,21 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Content Include="Images\Change4Impact-01_Dark_01.png" />
     <Content Include="Images\logo.png" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="AantalContainers.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Adressen.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Adressen2.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Containers.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Containers2.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="NLog.xsd">

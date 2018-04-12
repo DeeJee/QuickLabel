@@ -10,10 +10,16 @@ namespace QuickLabel.Printing
         Brush blackBrush = Brushes.Black;
         Brush whiteBrush = Brushes.White;
         QuickLabelData data;
-        Size size = new Size(480, 218);
+        private Size size;
+        public Size Size
+        {
+            get { return size; }
+            set { size = value; }
+        }
 
         public QLabel(QuickLabelData data)
         {
+            this.size = new Size(480, 218);
             this.data = data;
         }
 

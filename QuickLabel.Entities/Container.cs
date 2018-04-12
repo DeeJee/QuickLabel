@@ -8,5 +8,6 @@ namespace QuickLabel.Entities
         public String Typenummer { get; set; }
         public String Volume { get; set; }
         public string Fractie { get; set; }
+        public int Aantal { get; set; }
     }
 }
