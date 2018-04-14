@@ -99,6 +99,8 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="LabelFactory.cs" />
+    <Compile Include="LabelRol.cs" />
+    <Compile Include="LabelRolFactory.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +114,7 @@
     <Compile Include="Printing\QLabel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Resources\PrintStatusBar6_16x.png" />
     <EmbeddedResource Include="Controls\FieldControl.resx">
       <DependentUpon>FieldControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -138,6 +141,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Content Include="Images\Change4Impact-01_Dark_01.png" />
     <Content Include="Images\logo.png" />

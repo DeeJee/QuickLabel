@@ -31,5 +31,10 @@ namespace QuickLabel.Forms
             this.Aantal = null;
         }
 
+        private void AantalForm_Load(object sender, EventArgs e)
+        {
+            TxtAantal.Text = "1";
+            TxtAantal.Focus();
+        }
     }
 }

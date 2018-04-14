@@ -1,6 +1,7 @@
 ﻿using QuickLabel.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
@@ -78,6 +79,33 @@ namespace QuickLabel.Printing
             {
                 document.Print();
             }
+        }
+
+        public static string[] FitString(Graphics graphics, string text, Font font, Size size)
+        {
+            List<string> lines = new List<string>();
+            var parts = text.Split(' ');
+
+            int index = 0;
+            int startIndex = 0;
+            while (index < parts.Length)
+            {
+                string fragment = parts[index];
+                SizeF fragmentSize = graphics.MeasureString(fragment, font);
+                while (fragmentSize.Width < size.Width && index < parts.Length)
+                {
+                    index++;
+                    if (index == parts.Length) break;
+                    fragment += $" {parts[index]}";
+                    fragmentSize = graphics.MeasureString(fragment, font);
+                   
+                }
+                
+                lines.Add(String.Join(" ",parts, startIndex,index-startIndex));
+                startIndex = index;
+            }
+
+            return lines.ToArray();
         }
     }
 }

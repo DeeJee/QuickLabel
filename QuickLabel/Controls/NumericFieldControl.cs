@@ -4,14 +4,9 @@ using System.Drawing;
 
 namespace QuickLabel.Controls
 {
-    public class NumericFieldControl:FieldControl
+    public class NumericFieldControl:TextBox
     {
-        public NumericFieldControl()
-        {
-            this.FieldLabel.Text = "NumericFieldControl";
-        }
-
-        protected override void TextBox_KeyPress(object sender, KeyPressEventArgs e)
+        protected override void OnKeyPress(KeyPressEventArgs e)
         {
             if (!IsAllowed(e.KeyChar))
             {
@@ -19,8 +14,7 @@ namespace QuickLabel.Controls
             }
             else
             {
-                TextBox textBox = sender as TextBox;
-                textBox.BackColor = Color.White;
+                BackColor = Color.White;
             }
         }
 
@@ -39,10 +33,9 @@ namespace QuickLabel.Controls
         {
             this.SuspendLayout();
             // 
-            // NumericFieldControl
+            // NumericTextBox
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
-            this.Name = "NumericFieldControl";
+            this.Name = "NumericTextBox";
             this.ResumeLayout(false);
             this.PerformLayout();
 

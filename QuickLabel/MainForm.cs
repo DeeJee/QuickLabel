@@ -4,6 +4,7 @@ using QuickLabel.Data;
 using QuickLabel.Forms;
 using QuickLabel.Printing;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
@@ -17,8 +18,6 @@ namespace QuickLabel
         QLabel label;
         AantalForm aantalForm;
         PrintDocument printer;
-        string selecterPrinter;
-        PaperSize paperSize;
 
         public MainForm()
         {
@@ -26,26 +25,29 @@ namespace QuickLabel
             //adapt the label size to the paper
             printer = new PrintDocument();
 
-            var selectedPrinter = Settings.PrinterSettings.Printer;
-            printer.PrinterSettings.PrinterName = selectedPrinter;
+            UpdateLabel();
+        }
+
+        private void UpdateLabel()
+        {
+            this.quickLabelControl.Label.Font = new Font(Settings.LabelSettings.FontFamily, Settings.LabelSettings.Size);
+
+
+
+            printer.PrinterSettings.PrinterName = Settings.PrinterSettings.Printer;
 
             var selectedPaper = Settings.PrinterSettings.Paper;
-
             foreach (PaperSize paperSize in printer.PrinterSettings.PaperSizes)
             {
                 if (paperSize.PaperName == selectedPaper)
                 {
-                    this.paperSize = paperSize;
+                    this.quickLabelControl.Height = paperSize.Height;
+                    this.quickLabelControl.Width = paperSize.Width;
+                    this.quickLabelControl.Refresh();
+                    Logger.Info("Label updated");
                     break;
                 }
             }
-            UpdateLabel(paperSize);
-        }
-
-        private void UpdateLabel(PaperSize paperSize)
-        {
-            this.quickLabelControl.Height = paperSize.Height;
-            this.quickLabelControl.Width = paperSize.Width;
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -65,7 +67,6 @@ namespace QuickLabel
         {
             var quickLabelData = labelManager.GetRandom();
             Font font = GetFont();
-
 
             label = new QLabel(quickLabelData);
             label.Font = font;
@@ -93,29 +94,27 @@ namespace QuickLabel
         private void settings_Click(object sender, EventArgs e)
         {
             SettingsForm settingsForm = new SettingsForm(this.printer);
-            settingsForm.FormClosed += SettingsForm_FormClosed;
             settingsForm.OnSettingsChanged += SettingsForm_OnSettingsChanged;
             settingsForm.Show();
         }
 
-        private void SettingsForm_OnSettingsChanged(PaperSize paperSize)
+        private void SettingsForm_OnSettingsChanged(object sender, EventArgs e)
         {
-            UpdateLabel(paperSize);
+            UpdateLabel();
         }
 
-        private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            labelManager = new LabelManager();
-            Font font = GetFont();
-            label.Font = font;
-            quickLabelControl.Refresh();
-        }
 
         private void Print_Click(object sender, EventArgs e)
         {
+            PrintLabels(new List<QLabel> { label });
+
+        }
+        private void PrintLabels(IList<QLabel> labels)
+        {
             PageSetupDialog pageDialog1 = new PageSetupDialog();
+
             //string title = string.Format("Labels voor batch {0}", labelRol.BatchNumber);
-            LabelPrinter labelPrinter = new LabelPrinter(label, "QuickLabel document");
+            LabelPrinter labelPrinter = new LabelPrinter(labels, "QuickLabel document");
             pageDialog1.Document = labelPrinter;
 
             //eventueel standaard printer instellen
@@ -138,11 +137,15 @@ namespace QuickLabel
                 return;
             }
 
+            List<QLabel> labels = new List<QLabel>();
             for (int index = 0; index < aantalForm.Aantal; index++)
             {
-
+                var label = labelManager.GetRandom();
+                var qLabel = new QLabel(label);
+                qLabel.Font = GetFont();
+                labels.Add(qLabel);
             }
-
+            PrintLabels(labels);
         }
     }
 }

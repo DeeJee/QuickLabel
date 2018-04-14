@@ -69,6 +69,7 @@ namespace QuickLabel.Controls
 
             if (Label != null)
             {
+                Label.Size = Size;
                 Label.Print(pe.Graphics, 0, 0);
             }
 

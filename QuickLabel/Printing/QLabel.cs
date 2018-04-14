@@ -10,16 +10,11 @@ namespace QuickLabel.Printing
         Brush blackBrush = Brushes.Black;
         Brush whiteBrush = Brushes.White;
         QuickLabelData data;
-        private Size size;
-        public Size Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
+        public Size Size { get;  set; }
 
         public QLabel(QuickLabelData data)
         {
-            this.size = new Size(480, 218);
+            this.Size = new Size(480, 218);
             this.data = data;
         }
 
@@ -30,9 +25,8 @@ namespace QuickLabel.Printing
                 throw new Exception("Font must be set before calling Print()");
             }
 
-            Rectangle rect = new Rectangle(new Point(left, top), size);
+            Rectangle rect = new Rectangle(new Point(left, top), Size);
             g.FillRectangle(whiteBrush, rect);
-            ////g.DrawRectangle(new Pen(blackBrush, 5), rect);
 
             PointF endPosition;
             var adres = data.Adres;
@@ -43,7 +37,9 @@ namespace QuickLabel.Printing
             endPosition = DrawLine(g, new PointF(left, endPosition.Y), " ");
             var container = data.Container;
             endPosition = DrawLine(g, new PointF(left, endPosition.Y), "Extra lediging");
-            endPosition = DrawLine(g, new PointF(left, endPosition.Y), $"{data.Aantal} stuks, {container.Volume} {container.Omschrijving}, {container.Fractie}");
+
+            var containerline = $"{data.Aantal} stuks, {container.Volume} {container.Omschrijving}, {container.Fractie}";
+            endPosition = DrawFittedLine(g, new PointF(left, endPosition.Y), containerline);
         }
 
         private PointF DrawLine(Graphics graphics, PointF location, string text)
@@ -51,6 +47,17 @@ namespace QuickLabel.Printing
             graphics.DrawString(text, Font, blackBrush, location);
             var size = graphics.MeasureString(text, Font);
             return new PointF(location.X + size.Width, location.Y + size.Height);
+        }
+
+        private PointF DrawFittedLine(Graphics graphics, PointF location, string text)
+        {
+            var lines = PrinterHelper.FitString(graphics, text, Font, Size);
+            foreach(string line in lines)
+            {
+                location.X = 0;
+                location= DrawLine(graphics, location, line);
+            }
+            return location;
         }
     }
 }

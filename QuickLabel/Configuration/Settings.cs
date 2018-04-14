@@ -33,9 +33,9 @@ namespace QuickLabel.Configuration
             set { settings.LabelSettings = value; }
         }
 
-        public static void Init()
+        public static void Init(bool force=false)
         {
-            if (settings != null)
+            if (settings != null && !force)
             {
                 return;
             }

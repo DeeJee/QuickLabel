@@ -12,40 +12,27 @@ namespace QuickLabel.Forms
     public partial class SettingsForm : Form
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        PrintDocument printer;
-        PaperSize paperSize;
+        //public Settings Settings { get; private set; }
 
         public delegate void SettingsChanged(PaperSize paperSize);
-        public event SettingsChanged OnSettingsChanged;
+        //public event SettingsChanged OnSettingsChanged;
+        public event EventHandler OnSettingsChanged;
 
         public SettingsForm()
         {
             InitializeComponent();
-           
         }
 
         private void LabelPrinterSelector_OnSelectionChanged()
         {
-            var selectedPaper = this.LabelPrinterSelector.Settings.Paper;
-            Log.Info("Selecting paper");
-            foreach (PaperSize paperSize in printer.PrinterSettings.PaperSizes)
-            {
-                if (paperSize.PaperName == selectedPaper)
-                {
-                    this.paperSize = paperSize;
-                    break;
-                }
-            }
-
             Log.Info("Paper selected");
-            ThrowEvent();
+            NotifyChanges();
         }
 
         public SettingsForm(PrintDocument printer)
         {
             InitializeComponent();
-            this.printer = printer;
-            this.LabelPrinterSelector.OnSelectionChanged += LabelPrinterSelector_OnSelectionChanged;
+         
         }
 
         private void Settings_Load(object sender, EventArgs e)
@@ -57,27 +44,27 @@ namespace QuickLabel.Forms
 
             FontFamily.SelectedIndexChanged += FontFamily_SelectedIndexChanged;
             FontSize.TextChanged += FontSize_TextChanged;
-
+            this.LabelPrinterSelector.OnSelectionChanged += LabelPrinterSelector_OnSelectionChanged;
             Log.Info("Settings loaded.");
         }
 
-       
+
 
         private void LoadLabelSettings()
         {
             InstalledFontCollection installedFontCollection = new InstalledFontCollection();
-            foreach(var family in installedFontCollection.Families)
+            foreach (var family in installedFontCollection.Families)
             {
                 FontFamily.Items.Add(family.Name);
             }
-            FontFamily.SelectedItem= Settings.LabelSettings.FontFamily;
+            FontFamily.SelectedItem = Settings.LabelSettings.FontFamily;
             FontSize.Text = Settings.LabelSettings.Size.ToString();
         }
 
         private void LoadInputSettings()
         {
             this.NaamAdressenbestand.Text = ConfigurationManager.AppSettings.Get(Constants.AdressenFileName);
-            this.AdressenBestandFieldSeparator.Text= ConfigurationManager.AppSettings.Get(Constants.AdressenbestandFieldSeparator);
+            this.AdressenBestandFieldSeparator.Text = ConfigurationManager.AppSettings.Get(Constants.AdressenbestandFieldSeparator);
             this.NaamContainerBestand.Text = ConfigurationManager.AppSettings.Get(Constants.ContainersFileName);
             this.ContainerBestandFieldSeparator.Text = ConfigurationManager.AppSettings.Get(Constants.ContainerbestandFieldSeparator);
         }
@@ -94,7 +81,7 @@ namespace QuickLabel.Forms
                 Log.Info("Saving settings.");
                 SavePrinterSettings();
                 SaveAppSettings();
-             
+
                 Close();
                 Log.Info("Settings saved.");
             }
@@ -107,7 +94,7 @@ namespace QuickLabel.Forms
 
         private void SaveAppSettings()
         {
-           System.Configuration. Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
+            System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
             ChangeAppSetting(config, Constants.AdressenFileName, NaamAdressenbestand.Text);
             ChangeAppSetting(config, Constants.ContainersFileName, NaamContainerBestand.Text);
             ChangeAppSetting(config, Constants.AdressenbestandFieldSeparator, AdressenBestandFieldSeparator.Text);
@@ -141,7 +128,9 @@ namespace QuickLabel.Forms
 
         private void ButtonAnnuleren_Click(object sender, EventArgs e)
         {
+            Settings.Init(true);
             Close();
+            OnSettingsChanged?.Invoke(this, null);
         }
 
         public void SelectTab(string name)
@@ -153,23 +142,25 @@ namespace QuickLabel.Forms
 
         private void FontFamily_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateExampleLabel();
+            NotifyChanges();
         }
 
         private void FontSize_TextChanged(object sender, EventArgs e)
         {
-            UpdateExampleLabel();
+            NotifyChanges();
         }
 
-        private void ThrowEvent()
+        private void NotifyChanges()
         {
-            OnSettingsChanged?.Invoke(paperSize);
-        }
-
-        private void UpdateExampleLabel()
-        {
-            ExampleLabel.Label.Font = new System.Drawing.Font(FontFamily.Text, int.Parse(FontSize.Text));
-            ExampleLabel.Refresh();
+            Settings.PrinterSettings = LabelPrinterSelector.Settings;
+            Settings.LabelSettings.FontFamily = FontFamily.Text;
+            if (!string.IsNullOrEmpty(FontSize.Text))
+            {
+                Settings.LabelSettings.Size = int.Parse(FontSize.Text);
+                ExampleLabel.Label.Font = new System.Drawing.Font(FontFamily.Text, int.Parse(FontSize.Text));
+                ExampleLabel.Refresh();
+            }
+            OnSettingsChanged?.Invoke(this, null);
         }
     }
 }
