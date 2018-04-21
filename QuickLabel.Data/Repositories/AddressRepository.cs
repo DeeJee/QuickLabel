@@ -13,13 +13,18 @@ namespace QuickLabel.Data
     public class AddresRepository : IRepository<Adres>
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private string fileName;
+        private string separator;
+
+
+        public AddresRepository(string adressenBestand, string separator)
+        {
+            this.fileName = adressenBestand;
+            this.separator = separator;
+        }
 
         public IEnumerable<Adres> GetAll()
         {
-            var appSettings = ConfigurationManager.AppSettings;
-            var fileName = appSettings.Get("adressenFileName");
-            var separator = appSettings.Get("fieldSeparator");
-
             List<Adres> addresses = new List<Adres>();
             try
             {

@@ -13,10 +13,13 @@ namespace QuickLabel.Data
         ContainerManager containerManager;
         Random random = new Random();
 
-        public LabelManager()
+        public LabelManager(string adressenBestand,
+            string adressenSeparator,
+            string containerBestand,
+            string containerSeparator)
         {
-            addressManager = new AddressManager();
-            containerManager = new ContainerManager();
+            addressManager = new AddressManager(adressenBestand, adressenSeparator);
+            containerManager = new ContainerManager(containerBestand, containerSeparator);
         }
 
         public QuickLabelData GetRandom()

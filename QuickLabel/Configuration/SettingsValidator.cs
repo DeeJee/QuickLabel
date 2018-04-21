@@ -9,11 +9,11 @@ namespace QuickLabel.Configuration
     {
         public bool Validate()
         {
-            ValidatePrinterSettings(Settings.PrinterSettings);
+            ValidatePrinterSettings();
             return true;
         }
 
-        private void ValidatePrinterSettings(UserPrinterSettings userPrinterSettings)
+        private void ValidatePrinterSettings()
         {
 
         }

@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using QuickLabel.Configuration;
 using System.Drawing.Printing;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace QuickLabel.Controls
 {
@@ -60,7 +62,14 @@ namespace QuickLabel.Controls
                     selectedPrinter.PrinterName = printer;
 
                     //vult lijst met papierformaten die bij de geselecteerde printer horen
+                    List<PaperSize> sizes = new List<PaperSize>();
+                    
                     foreach (PaperSize paperSize in selectedPrinter.PaperSizes)
+                    {
+                        sizes.Add(paperSize);
+                     //   Paper.Items.Add(paperSize.PaperName);
+                    }
+                    foreach (PaperSize paperSize in sizes.OrderBy(o=>o.PaperName))
                     {
                         Paper.Items.Add(paperSize.PaperName);
                     }
@@ -98,7 +107,7 @@ namespace QuickLabel.Controls
         private void cbxLandscape_CheckedChanged(object sender, EventArgs e)
         {
             printerSettings.Landscape = cbxLandscape.Checked;
-            //ThrowEvent();
+            ThrowEvent();
         }
 
         private void ThrowEvent()

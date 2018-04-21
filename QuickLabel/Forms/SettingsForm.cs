@@ -5,18 +5,16 @@ using NLog;
 using System.Configuration;
 using System.Drawing.Text;
 using System.Drawing.Printing;
-using System.Linq;
-using System.Linq.Expressions;
 namespace QuickLabel.Forms
 {
     public partial class SettingsForm : Form
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        //public Settings Settings { get; private set; }
 
-        public delegate void SettingsChanged(PaperSize paperSize);
-        //public event SettingsChanged OnSettingsChanged;
-        public event EventHandler OnSettingsChanged;
+        public delegate void SettingsChanged(SettingsChangedEventArgs section);
+        public event SettingsChanged OnSettingsChanged;
+        System.Configuration.Configuration exeConfiguration;
+        QuickLabelSection section;
 
         public SettingsForm()
         {
@@ -32,7 +30,8 @@ namespace QuickLabel.Forms
         public SettingsForm(PrintDocument printer)
         {
             InitializeComponent();
-         
+            exeConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            section = (QuickLabelSection)exeConfiguration.GetSection(Constants.configSectionName);
         }
 
         private void Settings_Load(object sender, EventArgs e)
@@ -48,8 +47,6 @@ namespace QuickLabel.Forms
             Log.Info("Settings loaded.");
         }
 
-
-
         private void LoadLabelSettings()
         {
             InstalledFontCollection installedFontCollection = new InstalledFontCollection();
@@ -57,21 +54,27 @@ namespace QuickLabel.Forms
             {
                 FontFamily.Items.Add(family.Name);
             }
-            FontFamily.SelectedItem = Settings.LabelSettings.FontFamily;
-            FontSize.Text = Settings.LabelSettings.Size.ToString();
+            FontFamily.SelectedItem = section.Label.Font.Name;
+            FontSize.Text = section.Label.Font.Size.ToString();
         }
 
         private void LoadInputSettings()
         {
-            this.NaamAdressenbestand.Text = ConfigurationManager.AppSettings.Get(Constants.AdressenFileName);
-            this.AdressenBestandFieldSeparator.Text = ConfigurationManager.AppSettings.Get(Constants.AdressenbestandFieldSeparator);
-            this.NaamContainerBestand.Text = ConfigurationManager.AppSettings.Get(Constants.ContainersFileName);
-            this.ContainerBestandFieldSeparator.Text = ConfigurationManager.AppSettings.Get(Constants.ContainerbestandFieldSeparator);
+            this.NaamAdressenbestand.Text = section.Invoer.AdressenFile;
+            this.AdressenBestandFieldSeparator.Text = section.Invoer.AdressenSeparator;
+            this.NaamContainerBestand.Text = section.Invoer.ContainersFile;
+            this.ContainerBestandFieldSeparator.Text = section.Invoer.ContainersSeparator;
         }
 
         private void LoadPrinterSettings()
         {
-            LabelPrinterSelector.Settings = Settings.PrinterSettings;
+            LabelPrinterSelector.Settings = new UserPrinterSettings
+            {
+                AlwaysShowPrintDialog = section.Printer.AlwaysShowPrintDialog,
+                Landscape = section.Printer.Landscape,
+                Paper = section.Printer.Paper,
+                Printer = section.Printer.Printer
+            };
         }
 
         private void ButtonOk_Click(object sender, EventArgs e)
@@ -79,8 +82,10 @@ namespace QuickLabel.Forms
             try
             {
                 Log.Info("Saving settings.");
-                SavePrinterSettings();
-                SaveAppSettings();
+                UpdateSettings();
+
+                exeConfiguration.Save(ConfigurationSaveMode.Minimal);
+                ConfigurationManager.RefreshSection(Constants.configSectionName);
 
                 Close();
                 Log.Info("Settings saved.");
@@ -92,45 +97,57 @@ namespace QuickLabel.Forms
             }
         }
 
-        private void SaveAppSettings()
+        private void UpdateSettings()
         {
-            System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(Application.ExecutablePath);
-            ChangeAppSetting(config, Constants.AdressenFileName, NaamAdressenbestand.Text);
-            ChangeAppSetting(config, Constants.ContainersFileName, NaamContainerBestand.Text);
-            ChangeAppSetting(config, Constants.AdressenbestandFieldSeparator, AdressenBestandFieldSeparator.Text);
-            ChangeAppSetting(config, Constants.ContainerbestandFieldSeparator, ContainerBestandFieldSeparator.Text);
-            ChangeAppSetting(config, Constants.FontFamily, FontFamily.Text);
-            ChangeAppSetting(config, Constants.FontSize, FontSize.Text);
-            config.Save(ConfigurationSaveMode.Minimal);
-            ConfigurationManager.RefreshSection("appSettings");
+            section.Printer.Printer = LabelPrinterSelector.Settings.Printer;
+            section.Printer.Paper = LabelPrinterSelector.Settings.Paper;
+            section.Printer.Landscape = LabelPrinterSelector.Settings.Landscape;
+            section.Printer.AlwaysShowPrintDialog = LabelPrinterSelector.Settings.AlwaysShowPrintDialog;
+            section.Label.Font.Name = FontFamily.Text;
+            section.Label.Font.Size = int.Parse(FontSize.Text);
+
+            section.Invoer.AdressenFile = NaamAdressenbestand.Text;
+            section.Invoer.AdressenSeparator = AdressenBestandFieldSeparator.Text;
+            section.Invoer.ContainersFile = NaamContainerBestand.Text;
+            section.Invoer.ContainersSeparator = ContainerBestandFieldSeparator.Text;
         }
 
-        private void ChangeAppSetting(System.Configuration.Configuration config, string key, string value)
+        private SettingsChangedEventArgs GetChanges()
         {
-            var setting = config.AppSettings.Settings[key];
-            if (setting == null)
+            return new SettingsChangedEventArgs
             {
-                config.AppSettings.Settings.Add(key, value);
-            }
-            else
-            {
-                setting.Value = value;
-            }
-        }
+                Printer = LabelPrinterSelector.Settings.Printer,
+                Paper = LabelPrinterSelector.Settings.Paper,
+                Landscape = LabelPrinterSelector.Settings.Landscape,
+                AlwaysShowDialog = LabelPrinterSelector.Settings.AlwaysShowPrintDialog,
+                FontFamily = FontFamily.Text,
+                FontSize = int.Parse(FontSize.Text),
 
-        private void SavePrinterSettings()
-        {
-            Settings.PrinterSettings = LabelPrinterSelector.Settings;
-            Settings.LabelSettings.FontFamily = FontFamily.Text;
-            Settings.LabelSettings.Size = int.Parse(FontSize.Text);
-            Settings.Save();
+                AdressenFile = NaamAdressenbestand.Text,
+                AdressenSeparator = AdressenBestandFieldSeparator.Text,
+                ContainerFile = NaamContainerBestand.Text,
+                ContainerSeparator = ContainerBestandFieldSeparator.Text
+            };
         }
 
         private void ButtonAnnuleren_Click(object sender, EventArgs e)
         {
-            Settings.Init(true);
+            var changes = new SettingsChangedEventArgs
+            {
+                AdressenFile = section.Invoer.AdressenFile,
+                AdressenSeparator = section.Invoer.AdressenSeparator,
+                ContainerFile = section.Invoer.ContainersFile,
+                ContainerSeparator = section.Invoer.ContainersSeparator,
+                Landscape = section.Printer.Landscape,
+                AlwaysShowDialog = section.Printer.AlwaysShowPrintDialog,
+                Printer = section.Printer.Printer,
+                Paper = section.Printer.Paper,
+                FontFamily = section.Label.Font.Name,
+                FontSize = section.Label.Font.Size
+            };
+
             Close();
-            OnSettingsChanged?.Invoke(this, null);
+            OnSettingsChanged?.Invoke(changes);
         }
 
         public void SelectTab(string name)
@@ -152,15 +169,8 @@ namespace QuickLabel.Forms
 
         private void NotifyChanges()
         {
-            Settings.PrinterSettings = LabelPrinterSelector.Settings;
-            Settings.LabelSettings.FontFamily = FontFamily.Text;
-            if (!string.IsNullOrEmpty(FontSize.Text))
-            {
-                Settings.LabelSettings.Size = int.Parse(FontSize.Text);
-                ExampleLabel.Label.Font = new System.Drawing.Font(FontFamily.Text, int.Parse(FontSize.Text));
-                ExampleLabel.Refresh();
-            }
-            OnSettingsChanged?.Invoke(this, null);
+            var changes = GetChanges();
+            OnSettingsChanged?.Invoke(changes);
         }
     }
 }

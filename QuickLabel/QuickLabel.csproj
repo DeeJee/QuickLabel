@@ -54,7 +54,9 @@
   <ItemGroup>
     <Compile Include="Configuration\AppSettings.cs" />
     <Compile Include="Configuration\LabelSettings.cs" />
-    <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Configuration\QuicklabelSection.cs" />
+    <Compile Include="Configuration\Settings_old.cs" />
+    <Compile Include="Configuration\SettingsChangedEventArgs.cs" />
     <Compile Include="Configuration\SettingsValidator.cs" />
     <Compile Include="Configuration\UserPrinterSettings.cs" />
     <Compile Include="Configuration\UserSettings.cs" />
@@ -72,7 +74,7 @@
       <DependentUpon>LogoControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\NumericFieldControl.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\PrinterSelector.cs">
       <SubType>UserControl</SubType>
@@ -175,7 +177,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuickLabel.Data\QuickLabel.Data.csproj">

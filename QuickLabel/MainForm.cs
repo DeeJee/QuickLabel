@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace QuickLabel
@@ -18,25 +19,26 @@ namespace QuickLabel
         QLabel label;
         AantalForm aantalForm;
         PrintDocument printer;
+        QuickLabelSection config;
 
         public MainForm()
         {
             InitializeComponent();
+            config = (QuickLabelSection)System.Configuration.ConfigurationManager.GetSection("quicklabelSettings");
+
             //adapt the label size to the paper
             printer = new PrintDocument();
-
-            UpdateLabel();
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            toolStripStatusLabel1.Text = version.ToString();
         }
 
-        private void UpdateLabel()
+        private void UpdateLabel(SettingsChangedEventArgs section)
         {
-            this.quickLabelControl.Label.Font = new Font(Settings.LabelSettings.FontFamily, Settings.LabelSettings.Size);
+            this.quickLabelControl.Label.Font = new Font(section.FontFamily, section.FontSize);
+            quickLabelControl.Label.Landscape = section.Landscape;
+            printer.PrinterSettings.PrinterName = section.Printer;
 
-
-
-            printer.PrinterSettings.PrinterName = Settings.PrinterSettings.Printer;
-
-            var selectedPaper = Settings.PrinterSettings.Paper;
+            var selectedPaper = section.Paper;
             foreach (PaperSize paperSize in printer.PrinterSettings.PaperSizes)
             {
                 if (paperSize.PaperName == selectedPaper)
@@ -51,9 +53,16 @@ namespace QuickLabel
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
+            config = (QuickLabelSection)System.Configuration.ConfigurationManager.GetSection("quicklabelSettings");
+
             try
             {
-                labelManager = new LabelManager();
+                labelManager = new LabelManager(
+                    config.Invoer.AdressenFile,
+                    config.Invoer.AdressenSeparator,
+                    config.Invoer.ContainersFile,
+                    config.Invoer.ContainersSeparator);
+
             }
             catch (Exception ex)
             {
@@ -71,6 +80,11 @@ namespace QuickLabel
             label = new QLabel(quickLabelData);
             label.Font = font;
             quickLabelControl.Label = label;
+            var paperSize = PrinterHelper.GetPaperSize(printer, config.Printer);
+            var size = new Size(paperSize.Width, paperSize.Height);
+            this.label.Size = size;
+            label.Landscape = config.Printer.Landscape;
+            quickLabelControl.Size = size;
             quickLabelControl.Refresh();
         }
 
@@ -79,9 +93,9 @@ namespace QuickLabel
             Font font;
             try
             {
-                var fontFamily = Configuration.AppSettings.GetString(Constants.FontFamily);
-                var fontSize = Configuration.AppSettings.GetString(Constants.FontSize);
-                font = new Font(fontFamily, int.Parse(fontSize));
+                var fontFamily = config.Label.Font.Name;
+                var fontSize = config.Label.Font.Size;
+                font = new Font(fontFamily, fontSize);
             }
             catch (Exception ex)
             {
@@ -95,12 +109,12 @@ namespace QuickLabel
         {
             SettingsForm settingsForm = new SettingsForm(this.printer);
             settingsForm.OnSettingsChanged += SettingsForm_OnSettingsChanged;
-            settingsForm.Show();
+            settingsForm.ShowDialog();
         }
 
-        private void SettingsForm_OnSettingsChanged(object sender, EventArgs e)
+        private void SettingsForm_OnSettingsChanged(SettingsChangedEventArgs section)
         {
-            UpdateLabel();
+            UpdateLabel(section);
         }
 
 
@@ -113,19 +127,18 @@ namespace QuickLabel
         {
             PageSetupDialog pageDialog1 = new PageSetupDialog();
 
-            //string title = string.Format("Labels voor batch {0}", labelRol.BatchNumber);
             LabelPrinter labelPrinter = new LabelPrinter(labels, "QuickLabel document");
             pageDialog1.Document = labelPrinter;
 
             //eventueel standaard printer instellen
-            bool printerAndPaperSelected = PrinterHelper.HandlePrinterAndPaperSettings(pageDialog1, labelPrinter, Settings.PrinterSettings);
+            bool printerAndPaperSelected = PrinterHelper.HandlePrinterAndPaperSettings(pageDialog1, labelPrinter, config.Printer);
 
             printDialog1.Document = labelPrinter;
-            printDialog1.Document.DefaultPageSettings.Landscape = Settings.PrinterSettings.Landscape;
+            printDialog1.Document.DefaultPageSettings.Landscape = config.Printer.Landscape;
             printDialog1.AllowSelection = false;
             printDialog1.AllowSomePages = false;
 
-            PrinterHelper.PrintWithOrWithoutDialog(Settings.PrinterSettings, printerAndPaperSelected, labelPrinter, printDialog1);
+            PrinterHelper.PrintWithOrWithoutDialog(config.Printer, printerAndPaperSelected, labelPrinter, printDialog1);
         }
 
         private void PrintAanvragen_Click(object sender, EventArgs e)

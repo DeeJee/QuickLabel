@@ -14,9 +14,9 @@ namespace QuickLabel.Data
         IList<Container> list;
         Random random = new Random();
 
-        public ContainerManager()
+        public ContainerManager(string containerFilename, string separator)
         {
-            this.repo = new ContainerRepository();
+            this.repo = new ContainerRepository(containerFilename, separator);
         }
 
         public Container GetRandom()

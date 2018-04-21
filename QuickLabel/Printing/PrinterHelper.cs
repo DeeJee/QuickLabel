@@ -12,7 +12,7 @@ namespace QuickLabel.Printing
 {
     public static class PrinterHelper
     {
-        public static bool HandlePrinterAndPaperSettings(PageSetupDialog pageDialog1, PrintDocument labelPrinter, UserPrinterSettings printerSettings)
+        public static bool HandlePrinterAndPaperSettings(PageSetupDialog pageDialog1, PrintDocument labelPrinter, PrinterElement printerSettings)
         {
             bool succes = true;
 
@@ -39,7 +39,7 @@ namespace QuickLabel.Printing
             return succes;
         }
 
-        private static bool SelectDefaultPrinter(PrintDocument printDocument, PageSetupDialog pageDialog1, UserPrinterSettings printerSettings)
+        private static bool SelectDefaultPrinter(PrintDocument printDocument, PageSetupDialog pageDialog1, PrinterElement printerSettings)
         {
             foreach (string printer in PrinterSettings.InstalledPrinters)
             {
@@ -52,7 +52,7 @@ namespace QuickLabel.Printing
             return false;
         }
 
-        private static bool SelectDefaultPaper(PrintDocument printer, PageSetupDialog pageDialog1, UserPrinterSettings printerSettings)
+        private static bool SelectDefaultPaper(PrintDocument printer, PageSetupDialog pageDialog1, PrinterElement printerSettings)
         {
             foreach (PaperSize paperSize in printer.PrinterSettings.PaperSizes)
             {
@@ -66,7 +66,20 @@ namespace QuickLabel.Printing
             return false;
         }
 
-        public static void PrintWithOrWithoutDialog(UserPrinterSettings printerSettings, bool printerAndPaperSelected, PrintDocument document, PrintDialog printDialog1)
+        internal static PaperSize GetPaperSize(PrintDocument printDocument, PrinterElement printerElement)
+        { 
+            printDocument.PrinterSettings.PrinterName = printerElement.Printer;
+            foreach (PaperSize paperSize in printDocument.PrinterSettings.PaperSizes)
+            {
+                if (paperSize.PaperName == printerElement.Paper)
+                {
+                    return paperSize;
+                }
+            }
+            return null;
+        }
+
+        public static void PrintWithOrWithoutDialog(PrinterElement printerSettings, bool printerAndPaperSelected, PrintDocument document, PrintDialog printDialog1)
         {
             if (printerSettings.AlwaysShowPrintDialog || !printerAndPaperSelected)
             {

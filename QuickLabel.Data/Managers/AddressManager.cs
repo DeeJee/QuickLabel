@@ -11,9 +11,9 @@ namespace QuickLabel.Data
         IList<Adres> list;
         Random random = new Random();
 
-        public AddressManager()
+        public AddressManager(string adressenBestand, string separator)
         {
-            this.repo = new AddresRepository();
+            this.repo = new AddresRepository(adressenBestand, separator);
             list = (IList<Adres>)repo.GetAll();
         }
 

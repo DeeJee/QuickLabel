@@ -13,13 +13,16 @@ namespace QuickLabel.Data
     public class ContainerRepository : IRepository<Container>
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private string fileName;
+        private string separator;
 
+        public ContainerRepository(string containerFilename, string separator)
+        {
+            this.fileName = containerFilename;
+            this.separator = separator;
+        }
         public IEnumerable<Container> GetAll()
         {
-            var appSettings = ConfigurationManager.AppSettings;
-            var fileName = appSettings.Get("containersFileName");
-            var separator = appSettings.Get("fieldSeparator");
-
             try
             {
                 Helper.Configuration adresFile = new Helper.Configuration();
